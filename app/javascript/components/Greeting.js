@@ -1,28 +1,44 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchMessage } from '../redux/features/greetingsSlice';
+import { fetchRandomGreeting } from '../redux/greetings/greetingsSlice';
 
-const Greeting = () => 
-{
-    const dispatch = useDispatch();
-    const greeting = useSelector((state) => state.greeting.message);
-    useEffect(() => {
-        if (!greeting) {
-            dispatch(fetchMessage())
-            .then(() => {
-                console.log("Greeting fetched successfully");
-              })
-              .catch((error) => {
-                console.error("Error fetching greeting:", error);
-              });
-        }
-    }, [dispatch]);
+function Greeting() {
+  const dispatch = useDispatch();
+  const { greeting, isLoading, error } = useSelector((state) => state.greetings);
 
+  useEffect(() => {
+    dispatch(fetchRandomGreeting());
+  },
+  [dispatch]);
+
+  const handleClick = () => {
+    dispatch(fetchRandomGreeting());
+  };
+
+  if (isLoading) {
     return (
-        <div>
-            <h1>{greeting}</h1>
+      <>
+        <div className="loading">...isLoading</div>
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <div className="loading">
+          Something is wrong during fetching the data
         </div>
-    )
+      </>
+    );
+  }
+
+  return (
+    <>
+      <h1>{greeting}</h1>
+      <button type="button" onClick={handleClick}>new greeting</button>
+    </>
+  );
 }
 
 export default Greeting;
